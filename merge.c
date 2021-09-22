@@ -1,6 +1,7 @@
 /*
 
 c99 merge.c -O3 `pkg-config --libs --cflags gsl` -o merge
+GSL_RNG_SEED=1 ./merge > 1
 
 */
 
@@ -12,27 +13,42 @@ c99 merge.c -O3 `pkg-config --libs --cflags gsl` -o merge
 
 static const gsl_rng_type * T;
 static gsl_rng * r;
-enum {BUDGET = 10000000};
+enum {BUDGET = 100000000};
 enum {NB = 10, NMAX = 10000};
 enum {NP = NB * NMAX};
 static int bins[NB][NMAX];
 static int nb[NB];
-static const int n = 10; /* target in each bean */
+static const int n = 100; /* target in each bean */
+static double w[NP];
+
+static int comp(const void *a, const void *b) {
+  const int *i;
+  const int *j;
+  i = a;
+  j = b;
+  return -1 ? w[*i] > w[*j] : (w[*i] < w[*j] ? 1 : 0) ;
+}
+
 
 int main() {
   double dt;
   double F;
-  double sdt;
-  double w[NP];
-  double x[NP];
   double P[NB];
+  double sdt;
+  double u;
+  double w0;
+  double w1;
   double wm;
+  double x[NP];
   int i;
+  int i0;
+  int i1;
   int j;
   int k;
-  int N;
+  int keep[NP];
   int l;
   int m;
+  int N;
   int o;
 
   gsl_rng_free(r);
@@ -46,7 +62,7 @@ int main() {
   N = 10;
   for (i = 0; i < N; i++) {
     x[i] = 0;
-    w[i] = 1;
+    w[i] = 1.0/N;
   }
   for (j = 0; j < BUDGET; ) {
     for (i = 0; i < N; i++) {
@@ -100,12 +116,45 @@ int main() {
 	}
       }
 
+    /* sort bins */
     for (i = 0; i < NB; i++)
+      qsort(bins[i], nb[i], sizeof *bins[i], comp);
+
+    /* merge */
+    for (i = 0; i < N; i++)
+      keep[i] = 1;
+    for (i = 0; i < NB; i++) {
+      for (k = 0; k + 1 < nb[i]; k += 2) {
+	i0 = bins[i][k];
+	i1 = bins[i][k + 1];
+	w0 = w[i0];
+	w1 = w[i1];
+	wm = w0 + w1;
+	if (2*n*wm < P[i]) {
+	  u = gsl_rng_uniform(r);
+	  if (u * wm < w0) {
+	    w[i0] = wm;
+	    keep[i1] = 0;
+	  } else {
+	    w[i1] = wm;
+	    keep[i0] = 0;
+	  }
+	}
+      }
+    }
+    for (i = k = 0; i < N; i++)
+      if (keep[i]) {
+	x[k] = x[i];
+	w[k] = w[i];
+	k++;
+      }
+    N = k;
+
+    /* for (i = 0; i < NB; i++)
       printf("%d ", nb[i]);
     printf("\n");
-    
-    for (i = 0; i < NB; i++)
-      printf("%g ", P[i]);
-    printf("\n");
+    */
   }
+  for (i = 0; i < NB; i++)
+    printf("%.16e %d\n", P[i], nb[i]);
 }
