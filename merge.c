@@ -49,6 +49,8 @@ int main() {
   int l;
   int m;
   int N;
+  int ndel;
+  int nnew;
   int o;
 
   gsl_rng_free(r);
@@ -57,7 +59,7 @@ int main() {
   r = gsl_rng_alloc (T);
 
   F = -15.26;
-  dt = 0.0001;
+  dt = 0.00001;
   sdt = sqrt(dt);
   N = 10;
   for (i = 0; i < N; i++) {
@@ -73,6 +75,9 @@ int main() {
       else if (x[i] > 1)
 	x[i] = 0;
     }
+
+    nnew = 0;
+    ndel = 0;
 
     /* sort into bins */
     for (i = 0; i < NB; i++)
@@ -102,6 +107,7 @@ int main() {
 	  m = n * w[l] / P[i];
 	  if (n * w[l] > 2 * P[i] * m)
 	    m += 1;
+	  nnew += 1;
 	  wm = w[l]/m;
 	  for (o = 0; o < m - 1; o++) {
 	    if (N == NP) {
@@ -135,9 +141,11 @@ int main() {
 	  if (u * wm < w0) {
 	    w[i0] = wm;
 	    keep[i1] = 0;
+	    ndel += 1;
 	  } else {
 	    w[i1] = wm;
 	    keep[i0] = 0;
+	    ndel += 1;
 	  }
 	}
       }
@@ -149,11 +157,7 @@ int main() {
 	k++;
       }
     N = k;
-
-    /* for (i = 0; i < NB; i++)
-      printf("%d ", nb[i]);
-    printf("\n");
-    */
+    fprintf(stderr, "nnew, ndel = %d, %d\n", nnew, ndel);
   }
   for (i = 0; i < NB; i++)
     printf("%.16e %d\n", P[i], nb[i]);
