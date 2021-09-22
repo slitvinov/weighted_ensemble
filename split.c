@@ -12,8 +12,8 @@ c99 split.c -O3 `pkg-config --libs --cflags gsl` -o split
 
 static const gsl_rng_type * T;
 static gsl_rng * r;
-enum {BUDGET = 100000};
-enum {NB = 10, NMAX = 100};
+enum {BUDGET = 10000000};
+enum {NB = 10, NMAX = 10000};
 enum {NP = NB * NMAX};
 static int bins[NB][NMAX];
 static int nb[NB];
@@ -63,7 +63,12 @@ int main() {
       nb[i] = 0;
     for (i = 0; i < N; i++) {
       k = x[i] * NB;
-      bins[k][nb[k]++] = i;
+      bins[k][nb[k]] = i;
+      if (nb[k] == NMAX) {
+	fprintf(stderr, "split: nb[k]=%d = NMAX=%d\n", nb[k], NMAX);
+	exit(2);
+      }
+      nb[k]++;
     }
 
     /* prob */
@@ -81,9 +86,6 @@ int main() {
 	  m = n * w[l] / P[i];
 	  if (n * w[l] > 2 * P[i] * m)
 	    m += 1;
-
-	  fprintf(stderr, "m = %d\n", m);
-
 	  wm = w[l]/m;
 	  for (o = 0; o < m - 1; o++) {
 	    if (N == NP) {
