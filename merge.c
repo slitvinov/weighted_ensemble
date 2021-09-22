@@ -13,7 +13,7 @@ GSL_RNG_SEED=1 ./merge > 1
 
 static const gsl_rng_type * T;
 static gsl_rng * r;
-enum {BUDGET = 100000000};
+enum {BUDGET = 100000};
 enum {NB = 10, NMAX = 10000};
 enum {NP = NB * NMAX};
 static int bins[NB][NMAX];
@@ -51,6 +51,7 @@ int main() {
   int N;
   int ndel;
   int nnew;
+  int step;
   int o;
 
   gsl_rng_free(r);
@@ -66,7 +67,7 @@ int main() {
     x[i] = 0;
     w[i] = 1.0/N;
   }
-  for (j = 0; j < BUDGET; ) {
+  for (j = step = 0; j < BUDGET; step ++) {
     for (i = 0; i < N; i++) {
       x[i]  +=  F*dt + sqrt(2)*gsl_ran_gaussian(r, sdt);
       j ++;
@@ -157,8 +158,12 @@ int main() {
 	k++;
       }
     N = k;
-    fprintf(stderr, "nnew, ndel = %d, %d\n", nnew, ndel);
+    //fprintf(stderr, "nnew, ndel = %d, %d\n", nnew, ndel);
+
+    for (i = 0; i < N; i++)
+      printf("%.16e %.16e\n", x[i], w[i]);
+    printf("\n");
   }
-  for (i = 0; i < NB; i++)
-    printf("%.16e %d\n", P[i], nb[i]);
+  //for (i = 0; i < NB; i++)
+  // printf("%.16e %d\n", P[i], nb[i]);
 }
