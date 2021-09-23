@@ -1,7 +1,7 @@
 c=1
 for i in *.[ab].dat
 do
-    b=`awk '2 * NR >= '$c'{print "\"\" " $2; exit}' b`
+    b=`awk '2 * NR >= '$c'{print "\"\" " $2; exit}' b` || exit 2
     o=`basename "$i" .dat`.png
     gnuplot < "$i" > "$o" -e '
 set term pngcairo size 1080, 1080 font "Helvetica,30" linewidth 5;
