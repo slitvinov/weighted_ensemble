@@ -1,19 +1,10 @@
-/*
-
-c99 merge.c -O3 `pkg-config --libs --cflags gsl` -o merge
-GSL_RNG_SEED=1 ./merge > 1
-
-*/
-
 #include <stdio.h>
 #include <math.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
-
-
 static const gsl_rng_type * T;
 static gsl_rng * r;
-enum {BUDGET = 100000};
+enum {BUDGET = 10000};
 enum {NB = 10, NMAX = 10000};
 enum {NP = NB * NMAX};
 enum {n = 5}; /* target in each bean */
@@ -101,7 +92,7 @@ int main() {
   gid = 0;
 
   F = -15.26;
-  dt = 0.00001;
+  dt = 0.0001;
   sdt = sqrt(dt);
   N = n;
   for (i = 0; i < N; i++) {
