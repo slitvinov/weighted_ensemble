@@ -13,18 +13,7 @@ static double x[NP];
 static int bins[NB][NMAX];
 static int nb[NB];
 static unsigned long id[NP];
-static unsigned long idx[NP];
 static unsigned long pid[NP];
-
-static int
-comp_idx(const void *a, const void *b)
-{
-  const unsigned long *i;
-  const unsigned long *j;
-  i = a;
-  j = b;
-  return -1 ? id[*i] > id[*j] : (id[*i] < id[*j] ? 1 : 0) ;
-}
 
 static
 int dump(const char *pattern, int step, unsigned long N) {
@@ -32,22 +21,14 @@ int dump(const char *pattern, int step, unsigned long N) {
   FILE *file;
   unsigned long kk;
   unsigned int i;
-
-  for (i = 0; i < N; i++)
-    idx[i] = i;
-  if (step % 1 == 0) {
-    qsort(idx, N, sizeof *idx, comp_idx);
-    sprintf(path, pattern, step);
-    if ((file = fopen(path, "w")) == NULL) {
-      fprintf(stderr, "split: fail to open '%s'\n", path);
-      exit(2);
-    }
-    for (i = 0; i < N; i++) {
-      kk = id[idx[i]];
-      fprintf(file, "%ld %ld %.16e %.16e\n", kk, pid[i], x[i], w[i]);
-    }
-    fclose(file);
+  sprintf(path, pattern, step);
+  if ((file = fopen(path, "w")) == NULL) {
+    fprintf(stderr, "split: fail to open '%s'\n", path);
+    exit(2);
   }
+  for (i = 0; i < N; i++)
+    fprintf(file, "%ld %ld %.16e %.16e\n", id[i], pid[i], x[i], w[i]);
+  fclose(file);
   return 0;
 }
 
