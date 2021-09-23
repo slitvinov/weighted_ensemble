@@ -13,15 +13,18 @@ GSL_RNG_SEED=1 ./merge > 1
 
 static const gsl_rng_type * T;
 static gsl_rng * r;
-enum {BUDGET = 100000};
+enum {BUDGET = 10000};
 enum {NB = 10, NMAX = 10000};
 enum {NP = NB * NMAX};
 static int bins[NB][NMAX];
 static int nb[NB];
-static const int n = 100; /* target in each bean */
+static const int n = 10; /* target in each bean */
 static double w[NP];
+static unsigned long id[NP];
 
-static int comp(const void *a, const void *b) {
+static int
+comp(const void *a, const void *b)
+{
   const int *i;
   const int *j;
   i = a;
@@ -29,8 +32,19 @@ static int comp(const void *a, const void *b) {
   return -1 ? w[*i] > w[*j] : (w[*i] < w[*j] ? 1 : 0) ;
 }
 
+static int
+comp_idx(const void *a, const void *b)
+{
+  const int *i;
+  const int *j;
+  i = a;
+  j = b;
+  return -1 ? id[*i] > id[*j] : (id[*i] < id[*j] ? 1 : 0) ;
+}
+
 
 int main() {
+  char path[FILENAME_MAX];
   double dt;
   double F;
   double P[NB];
@@ -40,9 +54,11 @@ int main() {
   double w1;
   double wm;
   double x[NP];
+  FILE *file;
   int i;
   int i0;
   int i1;
+  int idx[NP];
   int j;
   int k;
   int keep[NP];
@@ -51,13 +67,16 @@ int main() {
   int N;
   int ndel;
   int nnew;
-  int step;
   int o;
+  int step;
+  unsigned long gid;
+  unsigned long kk;
 
   gsl_rng_free(r);
   gsl_rng_env_setup();
   T = gsl_rng_default;
   r = gsl_rng_alloc (T);
+  gid = 0;
 
   F = -15.26;
   dt = 0.00001;
@@ -66,6 +85,7 @@ int main() {
   for (i = 0; i < N; i++) {
     x[i] = 0;
     w[i] = 1.0/N;
+    id[i] = gid++;
   }
   for (j = step = 0; j < BUDGET; step ++) {
     for (i = 0; i < N; i++) {
@@ -117,6 +137,7 @@ int main() {
 	    }
 	    x[N] = x[l];
 	    w[N] = wm;
+	    id[N] = gid++;
 	    N++;
 	  }
 	  w[l] = wm;
@@ -155,15 +176,31 @@ int main() {
       if (keep[i]) {
 	x[k] = x[i];
 	w[k] = w[i];
+	id[k] = id[i];
 	k++;
       }
     N = k;
-    //fprintf(stderr, "nnew, ndel = %d, %d\n", nnew, ndel);
+    // fprintf(stderr, "nnew, ndel = %d, %d\n", nnew, ndel);
 
+
+    /* sort idx */
     for (i = 0; i < N; i++)
-      printf("%.16e %.16e\n", x[i], w[i]);
-    printf("\n");
+      idx[i] = i;
+
+    if (step % 1 == 0) {
+      qsort(idx, N, sizeof *idx, comp_idx);
+      sprintf(path, "%08d.dat", step);
+      if ((file = fopen(path, "w")) == NULL) {
+	fprintf(stderr, "split: fail to open '%s'\n", path);
+	exit(2);
+      }
+      for (i = 0; i < N; i++) {
+	kk = id[idx[i]];
+	fprintf(file, "%ld %.16e %.16e\n", kk, x[i], w[i]);
+      }
+      fclose(file);
+    }
   }
-  //for (i = 0; i < NB; i++)
-  // printf("%.16e %d\n", P[i], nb[i]);
+  for (i = 0; i < NB; i++)
+    printf("%.16e %d\n", P[i], nb[i]);
 }
