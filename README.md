@@ -1,7 +1,15 @@
-# weighted_ensemble
+<h1>Weighted Ensemble method</h1>
 
-# gnuplot
+<h2>Build</h2>
 
-```
-plot [0:1][-1:100] "00000300.dat" u 3:1:(sqrt($4)/10) w circle
-```
+Requires 
+<pre>
+$ make
+</pre>
+
+<h2>Run</h2>
+
+<pre>
+$ ./merge
+$ sh plot.sh
+</pre>
