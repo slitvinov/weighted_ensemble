@@ -2,7 +2,7 @@
 .SUFFIXES:
 .SUFFIXES: .c
 
-M = bd merge several split
+M = bd bin merge several split
 CFLAGS = -O3
 GSL_FLAGS = `pkg-config --libs --cflags gsl`
 all: $M

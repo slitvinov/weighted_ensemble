@@ -1,15 +1,7 @@
-/*
-
-c99 bd.c -O3 `pkg-config --libs --cflags gsl` -o bd
-
- */
-
 #include <stdio.h>
 #include <math.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
-
-
 static const gsl_rng_type * T;
 static gsl_rng * r;
 
