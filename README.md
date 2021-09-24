@@ -14,3 +14,10 @@ $ ./merge
 $ sh plot.sh
 </pre>
 
+<h2>Videos</h2>
+
+[merge](https://user-images.githubusercontent.com/115638/134638531-85c090ea-8d53-4bc7-9a2d-f43a60cef215.mp4)
+
+[bin constant](https://user-images.githubusercontent.com/115638/134639377-fa474df5-c65a-4630-96e4-03240b43c567.mp4)
+
+[bin step](https://user-images.githubusercontent.com/115638/134639382-4c491169-2db6-418c-8f2b-556d81623b8d.mp4)
