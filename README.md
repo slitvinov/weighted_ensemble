@@ -2,7 +2,7 @@
 
 <h2>Build</h2>
 
-Requires 
+Requires GSL, pkg-config, gnuplot
 <pre>
 $ make
 </pre>
