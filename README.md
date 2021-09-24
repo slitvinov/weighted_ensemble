@@ -11,7 +11,7 @@ $ make
 
 <pre>
 $ ./merge
-$ sh plot.sh
+$ sh merge.sh
 </pre>
 
 <h2>Videos</h2>
@@ -21,6 +21,8 @@ $ sh plot.sh
 [bin constant](https://user-images.githubusercontent.com/115638/134639377-fa474df5-c65a-4630-96e4-03240b43c567.mp4)
 
 [bin step](https://user-images.githubusercontent.com/115638/134639382-4c491169-2db6-418c-8f2b-556d81623b8d.mp4)
+
+[merge](img/merge.gif)
 
 <h2>Validation</h2>
 

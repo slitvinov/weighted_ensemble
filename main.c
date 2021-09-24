@@ -251,7 +251,7 @@ main(int argc, char **argv)
       }
     N = k;
     if (step % 10000 == 0)
-      printf("%.16e %.16Le %.16Le\n", step * dt, cumflux, step ? cumflux / step / dt : 0);
+      printf("%.16e %.16Le %.16Le\n", step * dt, cumflux, cumflux != 0 ? step * dt / cumflux : 0);
     fflush(stdout);
   }
 
