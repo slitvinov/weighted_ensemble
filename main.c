@@ -2,18 +2,28 @@
 #include <math.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
+static const char *me = "main";
 static const gsl_rng_type * T;
 static gsl_rng * r;
 enum {BUDGET = 160000000};
-enum {NB = 122, NMAX = 10000};
+enum {NB = 10, NMAX = 10000};
 enum {NP = NB * NMAX};
-enum {n = 3}; /* target in each bean */
 static double w[NP];
 static double x[NP];
 static int bins[NB][NMAX];
 static int nb[NB];
 static unsigned long id[NP];
 static unsigned long pid[NP];
+
+static void
+usg(void)
+{
+    fprintf(stderr,
+	    "%s -n int\n",
+	    me);
+    exit(1);
+}
+
 
 static int
 comp(const void *a, const void *b)
@@ -25,8 +35,10 @@ comp(const void *a, const void *b)
   return -1 ? w[*i] > w[*j] : (w[*i] < w[*j] ? 1 : 0) ;
 }
 
-int main() {
-  long double cumflux;
+int
+main(int argc, char **argv)
+{
+  char *end;
   double dt;
   double F;
   double P[NB];
@@ -35,7 +47,6 @@ int main() {
   double w0;
   double w1;
   double wm;
-  double warmup;
   int i0;
   int i1;
   int j;
@@ -43,12 +54,45 @@ int main() {
   int keep[NP];
   int l;
   int m;
+  int Nflag;
   int nnew;
   int o;
-  unsigned long step;
+  long double cumflux;
+  long n;
   unsigned long gid;
   unsigned long i;
   unsigned long N;
+  unsigned long step;
+
+  Nflag = 0;
+  while (*++argv != NULL && argv[0][0] == '-')
+    switch (argv[0][1]) {
+    case 'h':
+      usg();
+      break;
+    case 'n':
+      argv++;
+      if (argv[0] == NULL) {
+	fprintf(stderr, "%s: -o needs an argument\n", me);
+	return 1;
+      }
+      n = strtol(argv[0], &end, 10);
+      if (errno != 0 || *end != '\0') {
+	fprintf(stderr, "%s: -n argument is not an integer '%s'\n",
+		me, argv[0]);
+	return 1;
+      }
+      Nflag = 1;
+      break;
+    default:
+      fprintf(stderr, "%s: unknown option '%s'\n", me, argv[0]);
+      return 1;
+    }
+
+  if (Nflag == 0) {
+    fprintf(stderr, "%s: -n is not set\n", me);
+    return 1;
+  }
 
   gsl_rng_free(r);
   gsl_rng_env_setup();
@@ -87,7 +131,7 @@ int main() {
       k = x[i] * NB;
       bins[k][nb[k]] = i;
       if (nb[k] == NMAX) {
-	fprintf(stderr, "main: nb[k]=%d = NMAX=%d\n", nb[k], NMAX);
+	fprintf(stderr, "%s: nb[k]=%d = NMAX=%d\n", me, nb[k], NMAX);
 	exit(2);
       }
       nb[k]++;
@@ -112,7 +156,7 @@ int main() {
 	  wm = w[l]/m;
 	  for (o = 0; o < m - 1; o++) {
 	    if (N == NP) {
-	      fprintf(stderr, "main: N=%ld = NP=%d\n", N, NP);
+	      fprintf(stderr, "%s: N=%ld = NP=%d\n", me, N, NP);
 	      exit(2);
 	    }
 	    x[N] = x[l];
