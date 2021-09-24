@@ -22,7 +22,7 @@ $ sh merge.sh
 
 [bin step](https://user-images.githubusercontent.com/115638/134639382-4c491169-2db6-418c-8f2b-556d81623b8d.mp4)
 
-[merge](img/merge.gif)
+<p align="center"><img src="img/merge.gif" alt="two particles merging"/></p>
 
 <h2>Validation</h2>
 
