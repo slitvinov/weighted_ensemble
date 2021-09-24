@@ -22,7 +22,7 @@ int main() {
   T = gsl_rng_default;
   r = gsl_rng_alloc (T);
 
-  F = -15.26;
+  F = -15.76;
   dt = 0.0001;
   sdt = sqrt(dt);
   for (i = 0; i < N; i++)

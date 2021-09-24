@@ -54,7 +54,7 @@ int main() {
   r = gsl_rng_alloc (T);
   gid = 0;
 
-  F = -15.26;
+  F = -15.76;
   dt = 0.0005;
   sdt = sqrt(dt);
   for (i = 0; i < N; i++) {

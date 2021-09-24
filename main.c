@@ -4,33 +4,16 @@
 #include <gsl/gsl_randist.h>
 static const gsl_rng_type * T;
 static gsl_rng * r;
-enum {BUDGET = 10000};
-enum {NB = 10, NMAX = 10000};
+enum {BUDGET = 16000000000};
+enum {NB = 122, NMAX = 10000};
 enum {NP = NB * NMAX};
-enum {n = 5}; /* target in each bean */
+enum {n = 1000}; /* target in each bean */
 static double w[NP];
 static double x[NP];
 static int bins[NB][NMAX];
 static int nb[NB];
 static unsigned long id[NP];
 static unsigned long pid[NP];
-
-static
-int dump(const char *pattern, int step, unsigned long N) {
-  char path[FILENAME_MAX];
-  FILE *file;
-  unsigned long kk;
-  unsigned int i;
-  sprintf(path, pattern, step);
-  if ((file = fopen(path, "w")) == NULL) {
-    fprintf(stderr, "main: fail to open '%s'\n", path);
-    exit(2);
-  }
-  for (i = 0; i < N; i++)
-    fprintf(file, "%ld %ld %.16e %.16e\n", id[i], pid[i], x[i], w[i]);
-  fclose(file);
-  return 0;
-}
 
 static int
 comp(const void *a, const void *b)
@@ -43,6 +26,7 @@ comp(const void *a, const void *b)
 }
 
 int main() {
+  long double cumflux;
   double dt;
   double F;
   double P[NB];
@@ -51,7 +35,6 @@ int main() {
   double w0;
   double w1;
   double wm;
-  unsigned long i;
   int i0;
   int i1;
   int j;
@@ -59,12 +42,12 @@ int main() {
   int keep[NP];
   int l;
   int m;
-  unsigned long N;
-  int ndel;
   int nnew;
   int o;
-  int step;
+  unsigned long step;
   unsigned long gid;
+  unsigned long i;
+  unsigned long N;
 
   gsl_rng_free(r);
   gsl_rng_env_setup();
@@ -72,8 +55,8 @@ int main() {
   r = gsl_rng_alloc (T);
   gid = 0;
 
-  F = -15.26;
-  dt = 0.0001;
+  F = -15.76;
+  dt = 0.00001;
   sdt = sqrt(dt);
   N = n;
   for (i = 0; i < N; i++) {
@@ -82,18 +65,19 @@ int main() {
     id[i] = gid++;
     pid[i] = id[i];
   }
+  cumflux = 0;
   for (j = step = 0; j < BUDGET; step ++) {
     for (i = 0; i < N; i++) {
-      x[i]  +=  F*dt + sqrt(2)*gsl_ran_gaussian(r, sdt);
-      j ++;
-      if (x[i] < 0)
+      double xn;
+      xn = x[i] + F*dt + sqrt(2)*gsl_ran_gaussian(r, sdt);
+      j++;
+      if (xn > 1) {
 	x[i] = 0;
-      else if (x[i] > 1)
-	x[i] = 0;
+	cumflux += w[i];
+      } else if (xn > 0) {
+	x[i] = xn;
+      }
     }
-
-    nnew = 0;
-    ndel = 0;
 
     /* sort into bins */
     for (i = 0; i < NB; i++)
@@ -139,8 +123,6 @@ int main() {
 	  w[l] = wm;
 	}
       }
-    if (step % 1 == 0)
-      dump("%08d.a.dat", step, N);
 
     /* sort bins */
     for (i = 0; i < NB; i++)
@@ -161,15 +143,14 @@ int main() {
 	  if (u * wm < w0) {
 	    w[i0] = wm;
 	    keep[i1] = 0;
-	    ndel += 1;
 	  } else {
 	    w[i1] = wm;
 	    keep[i0] = 0;
-	    ndel += 1;
 	  }
 	}
       }
     }
+    /* delete */
     for (i = k = 0; i < N; i++)
       if (keep[i]) {
 	x[k] = x[i];
@@ -179,10 +160,11 @@ int main() {
 	k++;
       }
     N = k;
-    if (step % 1 == 0)
-      dump("%08d.b.dat", step, N);
 
+    if (step % 1000 == 0)
+      printf("%.16e %.16Le\n", step * dt, cumflux);
+    fflush(stdout);
   }
-  for (i = 0; i < NB; i++)
-    printf("%.16e %d\n", P[i], nb[i]);
+  //for (i = 0; i < NB; i++)
+  //  fprintf(stderr, "%.16e %d\n", P[i], nb[i]);
 }
