@@ -32,3 +32,5 @@ $ sh merge.sh
 (%i2) 1/%o1;
 (%o2)                        3.553304556611753E-5
 </pre>
+
+<p align="center"><img src="img/fig4.png" alt="Fig. 4 from huber"/></p>
