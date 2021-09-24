@@ -4,12 +4,12 @@
 #include <gsl/gsl_randist.h>
 static const gsl_rng_type * T;
 static gsl_rng * r;
-enum {BUDGET = 16000000000};
-enum {NB = 122, NMAX = 10000};
+enum {BUDGET = 160000000};
+enum {NB = 32, NMAX = 10000};
 enum {NP = NB * NMAX};
-enum {n = 100}; /* target in each bean */
-static long double w[NP];
-static long double x[NP];
+enum {n = 32}; /* target in each bean */
+static double w[NP];
+static double x[NP];
 static int bins[NB][NMAX];
 static int nb[NB];
 static unsigned long id[NP];
@@ -27,14 +27,15 @@ comp(const void *a, const void *b)
 
 int main() {
   long double cumflux;
-  long double dt;
-  long double F;
-  long double P[NB];
-  long double sdt;
-  long double u;
-  long double w0;
-  long double w1;
-  long double wm;
+  double dt;
+  double F;
+  double P[NB];
+  double sdt;
+  double u;
+  double w0;
+  double w1;
+  double wm;
+  double warmup;
   int i0;
   int i1;
   int j;
@@ -56,7 +57,8 @@ int main() {
   gid = 0;
 
   F = -15.76;
-  dt = 0.000005;
+  dt = 0.00001;
+  warmup = 0.3;
   sdt = sqrt(dt);
   N = n;
   for (i = 0; i < N; i++) {
@@ -73,7 +75,8 @@ int main() {
       j++;
       if (xn > 1) {
 	x[i] = 0;
-	cumflux += w[i];
+	if (dt * step > warmup)
+	  cumflux += w[i];
       } else if (xn > 0) {
 	x[i] = xn;
       }
@@ -161,8 +164,8 @@ int main() {
       }
     N = k;
 
-    if (step % 1000 == 0)
-      printf("%.16Le %.16Le\n", step * dt, cumflux);
+    if (step % 1000 == 0 && dt * step > warmup + dt)
+      printf("%.16e %.16Le\n", step * dt - warmup, cumflux);
     fflush(stdout);
   }
   //for (i = 0; i < NB; i++)
