@@ -5,7 +5,7 @@
 static const char *me = "main";
 static const gsl_rng_type * T;
 static gsl_rng * r;
-enum {BUDGET = 160000000};
+enum {BUDGET = 1600000000};
 enum {BMAX = 100, NMAX = 1000};
 enum {NP = BMAX * NMAX};
 static double w[NP];
@@ -56,6 +56,7 @@ main(int argc, char **argv)
   int m;
   int Nflag;
   int Bflag;
+  int Tflag;
   int nnew;
   int o;
   long double cumflux;
@@ -68,6 +69,7 @@ main(int argc, char **argv)
 
   Nflag = 0;
   Bflag = 0;
+  Tflag = 0;
   while (*++argv != NULL && argv[0][0] == '-')
     switch (argv[0][1]) {
     case 'h':
@@ -86,6 +88,20 @@ main(int argc, char **argv)
 	return 1;
       }
       Nflag = 1;
+      break;
+    case 't':
+      argv++;
+      if (argv[0] == NULL) {
+	fprintf(stderr, "%s: -t needs an argument\n", me);
+	return 1;
+      }
+      dt = strtod(argv[0], &end);
+      if (errno != 0 || *end != '\0') {
+	fprintf(stderr, "%s: -t argument is not an float '%s'\n",
+		me, argv[0]);
+	return 1;
+      }
+      Tflag = 1;
       break;
     case 'b':
       argv++;
@@ -114,6 +130,10 @@ main(int argc, char **argv)
     fprintf(stderr, "%s: -b is not set\n", me);
     return 1;
   }
+  if (Tflag == 0) {
+    fprintf(stderr, "%s: -t is not set\n", me);
+    return 1;
+  }
 
   if ((P = malloc(b * sizeof *P)) == NULL) {
     fprintf(stderr, "%s: malloca failed\n", me);
@@ -127,9 +147,8 @@ main(int argc, char **argv)
   gid = 0;
 
   F = -15.76;
-  dt = 0.0001;
   sdt = sqrt(dt);
-  N = n * b;
+  N = n;
   for (i = 0; i < N; i++) {
     x[i] = 0;
     w[i] = 1.0/N;
@@ -231,7 +250,7 @@ main(int argc, char **argv)
 	k++;
       }
     N = k;
-    if (step % 1000 == 0)
+    if (step % 10000 == 0)
       printf("%.16e %.16Le %.16Le\n", step * dt, cumflux, step ? cumflux / step / dt : 0);
     fflush(stdout);
   }
