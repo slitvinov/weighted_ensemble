@@ -157,6 +157,7 @@ main(int argc, char **argv)
   }
   cumflux = 0;
   for (j = step = 0; j < BUDGET; step ++) {
+    /* move */
     for (i = 0; i < N; i++) {
       double xn;
       xn = x[i] + F*dt + sqrt(2)*gsl_ran_gaussian(r, sdt);
