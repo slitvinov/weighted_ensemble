@@ -60,8 +60,6 @@ int main() {
   int l;
   int m;
   unsigned long N;
-  int ndel;
-  int nnew;
   int o;
   int step;
   unsigned long gid;
@@ -83,6 +81,7 @@ int main() {
     pid[i] = id[i];
   }
   for (j = step = 0; j < BUDGET; step ++) {
+    /* move */
     for (i = 0; i < N; i++) {
       x[i]  +=  F*dt + sqrt(2)*gsl_ran_gaussian(r, sdt);
       j ++;
@@ -91,9 +90,6 @@ int main() {
       else if (x[i] > 1)
 	x[i] = 0;
     }
-
-    nnew = 0;
-    ndel = 0;
 
     /* sort into bins */
     for (i = 0; i < NB; i++)
@@ -123,7 +119,6 @@ int main() {
 	  m = n * w[l] / P[i];
 	  if (n * w[l] > 2 * P[i] * m)
 	    m += 1;
-	  nnew += 1;
 	  wm = w[l]/m;
 	  for (o = 0; o < m - 1; o++) {
 	    if (N == NP) {
@@ -161,11 +156,9 @@ int main() {
 	  if (u * wm < w0) {
 	    w[i0] = wm;
 	    keep[i1] = 0;
-	    ndel += 1;
 	  } else {
 	    w[i1] = wm;
 	    keep[i0] = 0;
-	    ndel += 1;
 	  }
 	}
       }
