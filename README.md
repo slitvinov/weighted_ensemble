@@ -34,3 +34,5 @@ $ sh merge.sh
 </pre>
 
 <p align="center"><img src="img/fig4.png" alt="Fig. 4 from huber"/></p>
+<br/>
+<p align="center"><img src="img/comp.png" alt="Fig. 4 from huber"/></p>
