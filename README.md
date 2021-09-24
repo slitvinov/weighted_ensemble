@@ -16,4 +16,7 @@ $ sh plot.sh
 
 <h3>Videos</h2>
 
-<video src='img/merge.mp4' width=180/>
+<video width="320" height="240" controls>
+  <source src="img/merge.mp4" type="video/mp4">
+  Your browser does not support the video tag
+</video>
