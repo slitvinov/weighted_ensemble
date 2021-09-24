@@ -5,9 +5,9 @@
 static const gsl_rng_type * T;
 static gsl_rng * r;
 enum {BUDGET = 160000000};
-enum {NB = 32, NMAX = 10000};
+enum {NB = 122, NMAX = 10000};
 enum {NP = NB * NMAX};
-enum {n = 32}; /* target in each bean */
+enum {n = 3}; /* target in each bean */
 static double w[NP];
 static double x[NP];
 static int bins[NB][NMAX];
@@ -57,10 +57,9 @@ int main() {
   gid = 0;
 
   F = -15.76;
-  dt = 0.00001;
-  warmup = 0.3;
+  dt = 0.0001;
   sdt = sqrt(dt);
-  N = n;
+  N = n * NB;
   for (i = 0; i < N; i++) {
     x[i] = 0;
     w[i] = 1.0/N;
@@ -75,8 +74,7 @@ int main() {
       j++;
       if (xn > 1) {
 	x[i] = 0;
-	if (dt * step > warmup)
-	  cumflux += w[i];
+	cumflux += w[i];
       } else if (xn > 0) {
 	x[i] = xn;
       }
@@ -163,11 +161,8 @@ int main() {
 	k++;
       }
     N = k;
-
-    if (step % 1000 == 0 && dt * step > warmup + dt)
-      printf("%.16e %.16Le\n", step * dt - warmup, cumflux);
+    if (step % 100 == 0)
+      printf("%.16e %.16Le\n", step * dt, cumflux);
     fflush(stdout);
   }
-  //for (i = 0; i < NB; i++)
-  //  fprintf(stderr, "%.16e %d\n", P[i], nb[i]);
 }
