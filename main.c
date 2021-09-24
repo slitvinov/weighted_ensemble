@@ -23,7 +23,7 @@ int dump(const char *pattern, int step, unsigned long N) {
   unsigned int i;
   sprintf(path, pattern, step);
   if ((file = fopen(path, "w")) == NULL) {
-    fprintf(stderr, "merge: fail to open '%s'\n", path);
+    fprintf(stderr, "main: fail to open '%s'\n", path);
     exit(2);
   }
   for (i = 0; i < N; i++)
@@ -102,7 +102,7 @@ int main() {
       k = x[i] * NB;
       bins[k][nb[k]] = i;
       if (nb[k] == NMAX) {
-	fprintf(stderr, "merge: nb[k]=%d = NMAX=%d\n", nb[k], NMAX);
+	fprintf(stderr, "main: nb[k]=%d = NMAX=%d\n", nb[k], NMAX);
 	exit(2);
       }
       nb[k]++;
@@ -127,7 +127,7 @@ int main() {
 	  wm = w[l]/m;
 	  for (o = 0; o < m - 1; o++) {
 	    if (N == NP) {
-	      fprintf(stderr, "merge: N=%ld = NP=%d\n", N, NP);
+	      fprintf(stderr, "main: N=%ld = NP=%d\n", N, NP);
 	      exit(2);
 	    }
 	    x[N] = x[l];
