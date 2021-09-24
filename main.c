@@ -7,9 +7,9 @@ static gsl_rng * r;
 enum {BUDGET = 16000000000};
 enum {NB = 122, NMAX = 10000};
 enum {NP = NB * NMAX};
-enum {n = 1000}; /* target in each bean */
-static double w[NP];
-static double x[NP];
+enum {n = 100}; /* target in each bean */
+static long double w[NP];
+static long double x[NP];
 static int bins[NB][NMAX];
 static int nb[NB];
 static unsigned long id[NP];
@@ -27,14 +27,14 @@ comp(const void *a, const void *b)
 
 int main() {
   long double cumflux;
-  double dt;
-  double F;
-  double P[NB];
-  double sdt;
-  double u;
-  double w0;
-  double w1;
-  double wm;
+  long double dt;
+  long double F;
+  long double P[NB];
+  long double sdt;
+  long double u;
+  long double w0;
+  long double w1;
+  long double wm;
   int i0;
   int i1;
   int j;
@@ -56,7 +56,7 @@ int main() {
   gid = 0;
 
   F = -15.76;
-  dt = 0.00001;
+  dt = 0.000005;
   sdt = sqrt(dt);
   N = n;
   for (i = 0; i < N; i++) {
@@ -162,7 +162,7 @@ int main() {
     N = k;
 
     if (step % 1000 == 0)
-      printf("%.16e %.16Le\n", step * dt, cumflux);
+      printf("%.16Le %.16Le\n", step * dt, cumflux);
     fflush(stdout);
   }
   //for (i = 0; i < NB; i++)
