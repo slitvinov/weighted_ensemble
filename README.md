@@ -13,3 +13,7 @@ $ make
 $ ./merge
 $ sh plot.sh
 </pre>
+
+<h3>Videos</h2>
+
+<video src='img/merge.mp4' width=180/>
